@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Engineer Portfolio Cover</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap');
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #030712; /* Darker background for contrast */
+            color: #ffffff;
+            overflow-x: hidden;
+            perspective: 1000px; /* Needed for 3D effect */
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* --- Animated Background Blobs --- */
+        .blob-cont {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -5;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: moveBlob 20s infinite alternate;
+        }
+
+        .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #4f46e5; animation-duration: 25s; }
+        .blob-2 { bottom: -10%; right: -10%; width: 500px; height: 500px; background: #db2777; animation-duration: 30s; }
+        .blob-3 { top: 40%; left: 40%; width: 400px; height: 400px; background: #0891b2; animation-duration: 22s; opacity: 0.4; }
+
+        @keyframes moveBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 50px) scale(1.1); }
+        }
+
+        /* --- Glassmorphism Card with Tilt Support --- */
+        .glass-card-container {
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out; /* Smooth follow */
+        }
+
+        .glass-card {
+            background: rgba(17, 24, 39, 0.4); /* Darker glass */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform-style: preserve-3d; /* Keep children in 3D */
+        }
+
+        /* Content inside card pops out */
+        .card-content-pop {
+            transform: translateZ(20px);
+        }
+        .card-image-pop {
+            transform: translateZ(40px);
+        }
+
+        /* --- Animations --- */
+        /* Code Block Decoration Floating */
+        .code-decor {
+            position: absolute;
+            font-family: 'JetBrains Mono', monospace;
+            opacity: 0.15;
+            pointer-events: none;
+            user-select: none;
+            z-index: -1;
+            animation: floatSymbol 8s ease-in-out infinite;
+        }
+
+        @keyframes floatSymbol {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* Neon Text Gradient */
+        .text-neon-gradient {
+            background: linear-gradient(to right, #60a5fa, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientText 5s linear infinite;
+        }
+
+        @keyframes gradientText {
+            to { background-position: 200% center; }
+        }
+
+        /* Image Ring Animation */
+        .profile-ring {
+            position: absolute;
+            inset: -4px;
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5, #ff00cc, #333399);
+            background-size: 400%;
+            border-radius: 9999px;
+            z-index: -1;
+            animation: rotateGradient 20s linear infinite;
+            filter: blur(2px);
+        }
+
+        /* Upload button for profile image */
+        .upload-btn {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 8px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #ffffff;
+            z-index: 30;
+        }
+        .upload-input { display: none; }
+
+        @keyframes rotateGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Button Shine */
+        .btn-shine {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-shine::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        .btn-shine:hover::after {
+            left: 100%;
+        }
+
+        /* Canvas z-index */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -2;
+            opacity: 0.4;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 relative selection:bg-pink-500 selection:text-white">
+
+    <!-- Background Blobs -->
+    <div class="blob-cont">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <canvas id="networkCanvas"></canvas>
+
+    <!-- Floating Code Decor -->
+    <div class="code-decor text-7xl font-bold top-20 left-10 text-blue-500" style="animation-delay: 0s;">&lt;/&gt;</div>
+    <div class="code-decor text-5xl top-1/3 right-12 text-purple-500" style="animation-delay: 1s;">{ }</div>
+    <div class="code-decor text-3xl bottom-32 left-1/4 text-pink-500" style="animation-delay: 2s;">[]</div>
+    <div class="code-decor text-6xl bottom-10 right-20 text-cyan-500" style="animation-delay: 3s;">;</div>
+
+    <!-- Main 3D Container -->
+    <div class="glass-card-container w-full max-w-5xl" id="tiltCard">
+        <main class="glass-card rounded-[2.5rem] p-8 md:p-14 flex flex-col md:flex-row items-center gap-12 relative overflow-hidden">
+            
+            <!-- Reflection Shine on Card -->
+            <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 pointer-events-none transition-opacity duration-300 group-hover:opacity-100"></div>
+
+            <!-- Left Column: Text & Info -->
+            <div class="flex-1 space-y-7 z-10 text-center md:text-left order-2 md:order-1 card-content-pop">
+                
+                <!-- Badge -->
+                <div class="inline-flex items-center px-4 py-2 rounded-full bg-slate-800/60 border border-slate-700/50 backdrop-blur-md text-cyan-300 text-xs font-mono tracking-widest uppercase shadow-lg shadow-cyan-900/20">
+                    <span class="relative flex h-2 w-2 mr-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                    Open to Opportunities
+                </div>
+
+                <!-- Name & Title -->
+                <div class="space-y-2">
+                    <h1 class="text-5xl md:text-7xl font-black tracking-tight text-white leading-tight">
+                        Hi, I'm <span class="text-neon-gradient">Varnit Agarwal</span>
+                    </h1>
+                    <h2 class="text-xl md:text-3xl font-mono text-slate-300 h-8 flex items-center justify-center md:justify-start gap-2">
+                        <span>&gt;</span> <span id="typing-text" class="border-r-4 border-pink-500 pr-1"></span>
+                    </h2>
+                </div>
+
+                <!-- Bio -->
+                <p class="text-slate-400 text-lg leading-relaxed max-w-lg mx-auto md:mx-0 font-light">
+                    Software Engineer & Data Analyst transforming raw data into actionable insights. Expert in building robust applications and interactive dashboards.
+                </p>
+
+                <!-- Tech Stack (Detailed Pills) -->
+                <div class="flex flex-col gap-3 pt-2">
+                    
+                    <!-- Languages & Analytics -->
+                    <div>
+                        <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Core Stack</div>
+                        <div class="flex flex-wrap gap-2 justify-center md:justify-start">
+                            <span class="px-3 py-1 rounded-md bg-cyan-900/20 border border-cyan-500/30 text-cyan-300 text-sm font-medium hover:bg-cyan-500/20 transition-colors cursor-default flex items-center gap-2">
+                                <i class="fab fa-java"></i> Java
+                            </span>
+                            <span class="px-3 py-1 rounded-md bg-cyan-900/20 border border-cyan-500/30 text-cyan-300 text-sm font-medium hover:bg-cyan-500/20 transition-colors cursor-default flex items-center gap-2">
+                                <i class="fab fa-python"></i> Python
+                            </span>
+                            <span class="px-3 py-1 rounded-md bg-cyan-900/20 border border-cyan-500/30 text-cyan-300 text-sm font-medium hover:bg-cyan-500/20 transition-colors cursor-default flex items-center gap-2">
+                                <i class="fas fa-database"></i> SQL
+                            </span>
+                            <span class="px-3 py-1 rounded-md bg-cyan-900/20 border border-cyan-500/30 text-cyan-300 text-sm font-medium hover:bg-cyan-500/20 transition-colors cursor-default">
+                                R
+                            </span>
+                            <span class="px-3 py-1 rounded-md bg-purple-900/20 border border-purple-500/30 text-purple-300 text-sm font-medium hover:bg-purple-500/20 transition-colors cursor-default flex items-center gap-2">
+                                <i class="fas fa-chart-bar"></i> Power BI
+                            </span>
+                            <span class="px-3 py-1 rounded-md bg-purple-900/20 border border-purple-500/30 text-purple-300 text-sm font-medium hover:bg-purple-500/20 transition-colors cursor-default">
+                                Tableau
+                            </span>
+                             <span class="px-3 py-1 rounded-md bg-purple-900/20 border border-purple-500/30 text-purple-300 text-sm font-medium hover:bg-purple-500/20 transition-colors cursor-default flex items-center gap-2">
+                                <i class="fas fa-file-excel"></i> Excel
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Tools & Fundamentals -->
+                    <div>
+                        <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Tools & CS Fundamentals</div>
+                        <div class="flex flex-wrap gap-2 justify-center md:justify-start">
+                            <span class="px-2 py-1 rounded bg-slate-800/50 border border-slate-700 text-slate-400 text-xs hover:text-white transition-colors">GitHub</span>
+                            <span class="px-2 py-1 rounded bg-slate-800/50 border border-slate-700 text-slate-400 text-xs hover:text-white transition-colors">VS Code</span>
+                            <span class="px-2 py-1 rounded bg-slate-800/50 border border-slate-700 text-slate-400 text-xs hover:text-white transition-colors">Postman</span>
+                            <span class="px-2 py-1 rounded bg-slate-800/50 border border-slate-700 text-slate-400 text-xs hover:text-white transition-colors">Vercel</span>
+                            <span class="px-2 py-1 rounded bg-slate-800/50 border border-slate-700 text-slate-400 text-xs hover:text-white transition-colors">Agile</span>
+                            <span class="px-2 py-1 rounded bg-slate-800/50 border border-slate-700 text-slate-400 text-xs hover:text-white transition-colors">OOPS</span>
+                            <span class="px-2 py-1 rounded bg-slate-800/50 border border-slate-700 text-slate-400 text-xs hover:text-white transition-colors">DBMS</span>
+                            <span class="px-2 py-1 rounded bg-slate-800/50 border border-slate-700 text-slate-400 text-xs hover:text-white transition-colors">EDA</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- CTAs -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-4 justify-center md:justify-start">
+                    <a href="varnit's_resume.pdf" download="Varnit_Agarwal_Resume.pdf" class="btn-shine px-8 py-4 bg-white text-slate-900 rounded-xl font-bold shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
+                        <i class="fas fa-file-alt"></i> Download Resume
+                    </a>
+                    <a href="https://github.com/varnit007" target="_blank" rel="noopener noreferrer" class="px-8 py-4 glass-card rounded-xl font-bold border-slate-600 hover:bg-slate-800/50 hover:border-pink-500/50 hover:text-pink-400 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2">
+                        <i class="fab fa-github"></i> GitHub Profile
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Column: Image with 3D Depth -->
+            <div class="flex-1 flex justify-center items-center order-1 md:order-2 mb-8 md:mb-0 card-image-pop">
+                <div class="relative w-72 h-72 md:w-96 md:h-96">
+                    
+                    <!-- Spinning Ring -->
+                    <div class="profile-ring"></div>
+
+                    <!-- Image Container -->
+                    <div class="absolute inset-[3px] rounded-full overflow-hidden bg-slate-900 border-4 border-slate-800 z-10 shadow-2xl">
+                        <!-- Image: defaults to 'profile.jpg' in the folder; you can upload your photo with the camera button -->
+                        <img
+                            id="profile-img"
+                            src="varnit.jpg/WhatsApp Image 2026-01-07 at 2.51.10 PM.jpeg"
+                            alt="Profile"
+                            class="w-full h-full object-cover transform scale-105 hover:scale-110 transition-transform duration-700"
+                            onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=Varnit&backgroundColor=b6e3f4'"
+                        >
+                        <label class="upload-btn" title="Upload profile photo" for="profile-input">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                        <input id="profile-input" class="upload-input" type="file" accept="image/*">
+                    </div>
+
+                    <!-- Floating Stats Cards (With independent movement) -->
+                    <div class="absolute -right-2 top-16 bg-slate-800/80 backdrop-blur-md p-4 rounded-2xl border border-slate-700 shadow-xl flex items-center gap-3 z-20 animate-bounce-slow" style="animation-duration: 3s;">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-white shadow-lg">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs text-slate-400 font-mono">Experience</div>
+                            <div class="text-lg font-bold text-white">2+ Years</div>
+                        </div>
+                    </div>
+
+                    <div class="absolute -left-2 bottom-16 bg-slate-800/80 backdrop-blur-md p-4 rounded-2xl border border-slate-700 shadow-xl flex items-center gap-3 z-20 animate-bounce-slow" style="animation-duration: 4s; animation-delay: 1s;">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white shadow-lg">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs text-slate-400 font-mono">Projects</div>
+                            <div class="text-lg font-bold text-white">15+ Done</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- 3D Tilt Effect Logic ---
+        const card = document.getElementById('tiltCard');
+        const container = document.body;
+
+        container.addEventListener('mousemove', (e) => {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+
+        // Reset on mouse leave
+        container.addEventListener('mouseleave', () => {
+            card.style.transform = `rotateY(0deg) rotateX(0deg)`;
+        });
+
+        // --- Typing Effect Logic ---
+        const textElement = document.getElementById('typing-text');
+        const roles = ["Software Engineer", "Data Analyst", "Java Developer", "Problem Solver"];
+        let roleIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typeSpeed = 100;
+
+        function typeEffect() {
+            const currentRole = roles[roleIndex];
+            
+            if (isDeleting) {
+                textElement.textContent = currentRole.substring(0, charIndex - 1);
+                charIndex--;
+                typeSpeed = 40;
+            } else {
+                textElement.textContent = currentRole.substring(0, charIndex + 1);
+                charIndex++;
+                typeSpeed = 80;
+            }
+
+            if (!isDeleting && charIndex === currentRole.length) {
+                isDeleting = true;
+                typeSpeed = 2500; // Pause at end
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                roleIndex = (roleIndex + 1) % roles.length;
+                typeSpeed = 300; // Pause before new word
+            }
+
+            setTimeout(typeEffect, typeSpeed);
+        }
+
+        document.addEventListener('DOMContentLoaded', typeEffect);
+
+        // --- Canvas Logic (Refined for Performance & Style) ---
+        const canvas = document.getElementById('networkCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+        
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5; // Slower, more ambient
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)'; // White dots
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 50; i++) particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach((p, index) => {
+                p.update();
+                p.draw();
+                // Connections
+                for (let i = index; i < particles.length; i++) {
+                    const p2 = particles[i];
+                    const d = Math.hypot(p.x - p2.x, p.y - p2.y);
+                    if (d < 150) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(148, 163, 184, ${0.1 * (1 - d / 150)})`;
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => { resize(); initParticles(); });
+        resize();
+        initParticles();
+        animate();
+
+        // Add bounce animation style dynamically for floating cards
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = `
+            @keyframes bounce-slow {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
+            }
+            .animate-bounce-slow {
+                animation: bounce-slow 3s infinite ease-in-out;
+            }
+        `;
+        document.head.appendChild(styleSheet);
+
+        // Profile image upload/load handling
+        const profileImg = document.getElementById('profile-img');
+        const profileInput = document.getElementById('profile-input');
+
+        // Load persisted image if present
+        const savedProfile = localStorage.getItem('profileImage');
+        if (savedProfile) profileImg.src = savedProfile;
+
+        profileInput.addEventListener('change', (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                profileImg.src = ev.target.result;
+                try { localStorage.setItem('profileImage', ev.target.result); } catch (err) { /* ignore storage errors */ }
+            };
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+</html>
